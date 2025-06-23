@@ -1,7 +1,8 @@
+// src/pages/Login.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { apiService } from '../services/apiService';
+import { api } from '../services/apiService';
 import { FormCard } from '../components/common/FormCard';
 import { StyledInput } from '../components/common/StyledInput';
 import { StyledButton } from '../components/common/StyledButton';
@@ -19,11 +20,25 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const response = await apiService.login({ email, password });
-      await login(response.token);
+      const response = await api.login({ email, password });
+      // The access token is in the `data` property of the axios response
+      await login(response.data.accessToken);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
+      type AxiosError = {
+        response?: {
+          data?: {
+            error?: string;
+          };
+        };
+      };
+
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        (err as AxiosError).response?.data?.error
+      ) {
+        setError((err as AxiosError).response!.data!.error!);
       } else {
         setError('Login failed. Please try again.');
       }
@@ -32,6 +47,7 @@ const LoginPage = () => {
     }
   };
 
+  // ... JSX remains the same ...
   return (
     <FormCard>
       <h1>Login</h1>

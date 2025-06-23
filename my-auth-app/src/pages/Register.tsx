@@ -1,6 +1,7 @@
+// src/pages/Register.tsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { apiService } from '../services/apiService';
+import { api } from '../services/apiService';
 import { FormCard } from '../components/common/FormCard';
 import { StyledInput } from '../components/common/StyledInput';
 import { StyledButton } from '../components/common/StyledButton';
@@ -12,23 +13,32 @@ const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // MODIFICATION: Changed React.FormEvert to React.FormEvent
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long.');
-      return;
-    }
     setLoading(true);
 
+    type ApiError = {
+      response?: {
+        data?: {
+          error?: string;
+        };
+      };
+    };
+
     try {
-      await apiService.register({ email, password });
+      await api.register({ email, password });
       alert('Registration successful! Please log in.');
       navigate('/login');
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
+      const apiError = err as ApiError;
+      if (
+        apiError &&
+        typeof apiError === 'object' &&
+        apiError.response?.data?.error
+      ) {
+        setError(apiError.response.data.error as string);
       } else {
         setError('Registration failed. Please try again.');
       }
@@ -36,7 +46,8 @@ const RegisterPage = () => {
       setLoading(false);
     }
   };
-
+  
+  // ... JSX remains the same ...
   return (
     <FormCard>
       <h1>Create Account</h1>

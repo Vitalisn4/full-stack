@@ -1,0 +1,16 @@
+# Rust build artifacts
+/target/
+
+# Environment variables and secrets
+.env
+
+# Node/Vite/React build output (static assets)
+static/assets/
+static/index.html
+static/vite.svg
+
+# (Optional) IDE/editor files
+*.swp
+*.swo
+*.vscode/
+.idea/

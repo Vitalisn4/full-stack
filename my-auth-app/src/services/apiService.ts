@@ -1,44 +1,55 @@
-import type { LoginRequest, RegisterRequest, User } from './api-types';
+// src/services/apiService.ts
+import axios from 'axios';
+import { Configuration, HandlersApi } from './generated';
 
-class ApiService {
-  // Mock login function
-  async login(credentials: LoginRequest): Promise<{ token: string }> {
-    console.log('Mock Login with:', credentials.email);
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (credentials.email === 'admin@example.com' && credentials.password === 'password') {
-          resolve({ token: 'mock-jwt-token-for-admin-user' });
-        } else {
-          reject(new Error('Invalid email or password'));
-        }
-      }, 1000);
-    });
+const BASE_PATH = 'http://localhost:3000'; // Your Rust backend URL
+
+const axiosInstance = axios.create();
+
+const apiConfig = new Configuration({ basePath: BASE_PATH });
+export const api = new HandlersApi(apiConfig, BASE_PATH, axiosInstance);
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
+);
 
-  // Mock register function
-  async register(data: RegisterRequest): Promise<User> {
-    console.log('Mock Register with:', data.email);
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ id: Date.now(), email: data.email, role: 'User' });
-      }, 1000);
-    });
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        console.log('Access token expired. Attempting to refresh...');
+        // The generated `refresh` method might not be correct for sending cookies.
+        // We use a direct axios call to ensure `withCredentials` is sent.
+        const { data } = await axios.post(`${BASE_PATH}/api/auth/refresh`, {}, { withCredentials: true });
+        
+        const newAccessToken = data.accessToken;
+        localStorage.setItem('authToken', newAccessToken);
+        console.log('Token refreshed successfully.');
+        
+        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        console.error('Refresh token is invalid. Logging out.');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('sessionExpiry');
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
   }
-
-  // Mock getProfile function
-  async getProfile(token: string): Promise<User> {
-    console.log('Mock Get Profile with token:', token);
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (token === 'mock-jwt-token-for-admin-user') {
-          resolve({ id: 1, email: 'admin@example.com', role: 'Admin' });
-        } else {
-          reject(new Error('Invalid or expired token'));
-        }
-      }, 500);
-    });
-  }
-}
-
-// Export a singleton instance
-export const apiService = new ApiService();
+);

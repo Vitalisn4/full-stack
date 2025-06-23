@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import { useAuth } from '../context/AuthContext';
 import { FormCard } from '../components/common/FormCard';
