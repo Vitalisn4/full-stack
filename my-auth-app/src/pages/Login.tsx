@@ -3,24 +3,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { apiService } from '../services/apiService';
 import { FormCard } from '../components/common/FormCard';
-import { InputContainer } from '../components/common/InputContainer';
 import { StyledInput } from '../components/common/StyledInput';
 import { StyledButton } from '../components/common/StyledButton';
-import styled from 'styled-components';
-
-// Styled component for the "Register" link to make it stand out and fix clickability
-const RegisterLink = styled(Link)`
-  color: #c084fc; /* A vibrant purple from your image */
-  font-weight: 600;
-  cursor: pointer;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const BottomText = styled.p`
-  color: rgba(255, 255, 255, 0.9);
-`;
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -44,7 +28,7 @@ const LoginPage = () => {
         setError('Login failed. Please try again.');
       }
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -52,37 +36,28 @@ const LoginPage = () => {
     <FormCard>
       <h1>Login</h1>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-        <InputContainer>
-          <label htmlFor="email">Email</label>
-          <StyledInput
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </InputContainer>
-
-        <InputContainer>
-          <label htmlFor="password">Password</label>
-          <StyledInput
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </InputContainer>
-        
-        {error && <p style={{ color: '#fecaca', marginTop: '1rem' }}>{error}</p>}
-        
+        <StyledInput
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <StyledInput
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {error && <p style={{ color: '#f87171', marginTop: '-0.5rem', marginBottom: '1rem' }}>{error}</p>}
         <StyledButton type="submit" disabled={loading}>
           {loading ? 'Logging In...' : 'Login'}
         </StyledButton>
       </form>
-      <BottomText>
-        Don't have an account? <RegisterLink to="/register">Register</RegisterLink>
-      </BottomText>
+      <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+        Don't have an account? <Link to="/register">Register</Link>
+      </p>
     </FormCard>
   );
 };

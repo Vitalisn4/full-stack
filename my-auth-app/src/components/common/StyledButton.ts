@@ -1,30 +1,38 @@
 import styled from 'styled-components';
 
 export const StyledButton = styled.button`
-  padding: 1rem 1.5rem;
+  padding: 0.8rem 1.5rem;
+  width: 100%;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   background-color: #ffffff;
-  /* A deep purple that matches the "Register" link color family */
-  color: #5b21b6;
+  color: #4c51bf; /* Deep indigo text */
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  width: 100%;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   margin-top: 1rem;
 
-  &:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  /* Hover effect with gradient and lift */
+  &:hover:not(:disabled) {
+    background: linear-gradient(45deg, #a78bfa, #7c3aed);
+    color: #ffffff;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   }
 
-  &:active {
-    transform: scale(0.99);
+  /* Click effect */
+  &:active:not(:disabled) {
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   }
 
   &:disabled {
     background-color: #e0e0e0;
+    color: #9e9e9e;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 `;

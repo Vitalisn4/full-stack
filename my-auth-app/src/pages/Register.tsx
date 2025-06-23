@@ -2,23 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiService';
 import { FormCard } from '../components/common/FormCard';
-import { InputContainer } from '../components/common/InputContainer';
 import { StyledInput } from '../components/common/StyledInput';
 import { StyledButton } from '../components/common/StyledButton';
-import styled from 'styled-components';
-
-const LoginLink = styled(Link)`
-  color: #c084fc;
-  font-weight: 600;
-  cursor: pointer;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const BottomText = styled.p`
-  color: rgba(255, 255, 255, 0.9);
-`;
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
@@ -56,37 +41,28 @@ const RegisterPage = () => {
     <FormCard>
       <h1>Create Account</h1>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-        <InputContainer>
-            <label htmlFor="email">Email</label>
-            <StyledInput
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-            />
-        </InputContainer>
-
-        <InputContainer>
-            <label htmlFor="password">Password</label>
-            <StyledInput
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-            />
-        </InputContainer>
-
-        {error && <p style={{ color: '#fecaca', marginTop: '1rem' }}>{error}</p>}
-
+        <StyledInput
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <StyledInput
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {error && <p style={{ color: '#f87171', marginTop: '-0.5rem', marginBottom: '1rem' }}>{error}</p>}
         <StyledButton type="submit" disabled={loading}>
           {loading ? 'Creating Account...' : 'Register'}
         </StyledButton>
       </form>
-      <BottomText>
-        Already have an account? <LoginLink to="/login">Login</LoginLink>
-      </BottomText>
+      <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+        Already have an account? <Link to="/login">Login</Link>
+      </p>
     </FormCard>
   );
 };
