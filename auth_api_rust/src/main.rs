@@ -130,9 +130,9 @@ async fn main() {
             }),
         )
         .layer(cors);
-
+    
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    println!("🚀 Server started successfully on http://localhost:3000");
+    println!("🚀 Server started successfully on http://localhost:30001");
 
     axum::serve(listener, app).await.unwrap();
 }

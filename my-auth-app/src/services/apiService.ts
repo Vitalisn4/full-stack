@@ -2,7 +2,8 @@
 import axios from 'axios';
 import { Configuration, HandlersApi } from './generated';
 
-const BASE_PATH = 'http://localhost:3000'; // Your Rust backend URL
+const BASE_PATH = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 
 const axiosInstance = axios.create();
 
